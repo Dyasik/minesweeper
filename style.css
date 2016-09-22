@@ -1,0 +1,81 @@
+body {
+	text-align: center;
+}
+
+#main {
+	width: 400px;
+	height: 550px;
+	display: inline-block;
+	border-style: ridge;
+	border-width: 5px;
+	border-color: #ccc;
+	background-color: #ccc;
+}
+
+#head {
+	height: 45px;
+	border-bottom: ridge;
+	border-width: 5px;
+}
+
+
+.tile {
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	border-style: outset;
+	border-width: 2px;
+	margin-bottom: -4px;
+    /* user-select -- это нестандартное свойство */
+    /* поэтому нужны префиксы */
+	-webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.bomb:hover {
+	background-color: red;
+}
+
+.marked {
+	background-color: magenta;
+}
+
+.open {
+	border-style: solid;
+	border-color: #ccc;
+	font-family: sans-serif;
+	font-weight: bolder;
+}
+
+.d1 {
+	color: blue;
+}
+
+.d2 {
+	color: green;
+}
+
+.d3 {
+	color: red;
+}
+
+.d4 {
+	color: #16168a; /* dark-blue */
+}
+
+.d5 {
+	color: brown;
+}
+
+.d6 {
+	color: #019e9e; /* like teal, but brighter */
+}
+
+.d7 {
+	color: purple;
+}
+
+.d8 {
+	color: black;
+}
