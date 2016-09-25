@@ -26,6 +26,7 @@ body {
 	border-style: outset;
 	border-width: 2px;
 	margin-bottom: -4px;
+	overflow: hidden;
     /* user-select -- это нестандартное свойство */
     /* поэтому нужны префиксы */
 	-webkit-user-select: none;
@@ -37,13 +38,11 @@ body {
 	background-color: red;
 }
 
-.marked {
-	background-color: magenta;
-}
-
 .open {
 	border-style: solid;
-	border-color: #ccc;
+	border-color: #aaa;
+	border-width: 1px;
+	padding: 1px;
 	font-family: sans-serif;
 	font-weight: bolder;
 }

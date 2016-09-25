@@ -17,7 +17,7 @@ function start(event) {
 	var BTN = document.querySelector('#re');
 	var tiles = [];
 
-	var playing = false;
+	var playing = true;
 
 	BTN.addEventListener('click', function () {
 		FIELD.innerHTML = '';
@@ -132,7 +132,7 @@ function start(event) {
 
 	BTN.click();
 
-	// when clicking on an empty (digit == -1) tile
+	// when clicking on an empty (digit == 0) tile
 	function reveal(i) {
 		var row = Math.floor(i / COLS);
 		var col = i % COLS;
@@ -143,57 +143,57 @@ function start(event) {
 		tmp_row = row - 1;
 		tmp_col = col - 1;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_row != -1)&&(tmp_col != -1)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_row != -1 && tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 1
 		tmp_row = row - 1;
 		tmp_col = col;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_row != -1)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_row != -1 && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 2
 		tmp_row = row - 1;
 		tmp_col = col + 1;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_row != -1)&&(tmp_col != COLS)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_row != -1 && tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 3
 		tmp_row = row;
 		tmp_col = col - 1;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_col != -1)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 4
 		tmp_row = row;
 		tmp_col = col + 1;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_col != COLS)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 5
 		tmp_row = row + 1;
 		tmp_col = col - 1;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_row != ROWS)&&(tmp_col != -1)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_row != ROWS && tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 6
 		tmp_row = row + 1;
 		tmp_col = col;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_row != ROWS)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_row != ROWS && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 		// 7
 		tmp_row = row + 1;
 		tmp_col = col + 1;
 		tmp_i = tmp_row * COLS + tmp_col;
-		if ((tmp_row != ROWS)&&(tmp_col != COLS)&&(!tiles[tmp_i].isOpen)) {
-			tiles[tmp_i].onclick.apply(tiles[tmp_i]);
+		if (tmp_row != ROWS && tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
+			tiles[tmp_i].click();
 		}
 	}
 
@@ -206,23 +206,22 @@ function start(event) {
 		var isBomb = config.isBomb;
 		var isOpen = config.isOpen;
 		var isMarked = config.isMarked;
-		var digit = config.digit || -1;
+		var digit = config.digit;
 
 		tile.addEventListener("click", function (event) {
 			if (!isOpen && !isMarked && playing) {
 				if (isBomb) {
-					isOpen = true;
 					tile.innerHTML = '*';
 					playing = false;
 				} else {
-					if (digit == -1) {
+					tile.classList.add('open');
+					tile.classList.add('d' + digit);
+					tile.innerHTML = digit ? digit : '';
+					if (!digit) {
 						reveal(I);
-					} else {
-						tile.classList.add('open');
-						tile.classList.add('d' + digit);
-						tile.innerHTML = digit;
 					}
 				}
+				isOpen = true;
 			} 
 		});
 
@@ -231,10 +230,10 @@ function start(event) {
 			if (!isOpen && playing) {
 				if (isMarked) {
 					isMarked = false;
-					tile.classList.remove(MARK_CLASS);
+					tile.innerHTML = '';
 				} else {
 					isMarked = true;
-					tile.classList.add(MARK_CLASS);
+					tile.innerHTML = '&#8919;';
 				}
 			}
 		});
@@ -247,12 +246,22 @@ function start(event) {
 			FIELD.appendChild(tile);
 		}
 
+		function click () {
+			tile.click();
+		}
+
+		function freeToReveal () {
+			return !(isOpen||isBomb||isMarked);
+		}
+
 		return {
 			isBomb: isBomb,
 			isOpen: isOpen,
 			isMarked: isMarked,
 			digit: digit,
-			append: append
+			append: append, 
+			click: click,
+			freeToReveal: freeToReveal
 		};
 	}
 }
