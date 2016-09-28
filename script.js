@@ -212,6 +212,7 @@ function start(event) {
 			if (!isOpen && !isMarked && playing) {
 				if (isBomb) {
 					tile.innerHTML = '*';
+					tile.classList.add('boom');
 					playing = false;
 				} else {
 					tile.classList.add('open');
@@ -230,9 +231,11 @@ function start(event) {
 			if (!isOpen && playing) {
 				if (isMarked) {
 					isMarked = false;
+					tile.classList.remove('marked');
 					tile.innerHTML = '';
 				} else {
 					isMarked = true;
+					tile.classList.add('marked');
 					tile.innerHTML = '&#8919;';
 				}
 			}
