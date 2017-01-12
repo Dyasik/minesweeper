@@ -10,6 +10,13 @@ var TILE_CLASS = 'tile';
 var BOMB_CLASS = 'bomb';
 var MARK_CLASS = 'marked';
 
+// Force the element to be redrawn
+function redraw(el) {
+	var d = el.style.display;
+	el.parentElement.style.display = 'none';
+	el.parentElement.style.display = d;
+}
+
 document.addEventListener("DOMContentLoaded", start);
 
 function start(event) {
@@ -64,7 +71,7 @@ function start(event) {
 			i++;
 		}
 
-		console.log(configs);
+		//console.log(configs);
 
 		// calculating the digits
 		//
@@ -213,6 +220,7 @@ function start(event) {
 				if (isBomb) {
 					tile.innerHTML = '*';
 					tile.classList.add('boom');
+					redraw(tile);
 					playing = false;
 				} else {
 					tile.classList.add('open');
@@ -223,6 +231,7 @@ function start(event) {
 					}
 				}
 				isOpen = true;
+				isBomb && alert('BOOOM! Game over :(\nPress RESTART to play again.');
 			} 
 		});
 
