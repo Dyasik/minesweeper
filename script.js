@@ -5,17 +5,11 @@ var COLS = 20;
 var TILE_SIZE = 20 + (-4);
 var BOMBS_COUNT = 103;
 var TILES_COUNT = 500;
+var REVEALED_COUNT;
 
 var TILE_CLASS = 'tile';
 var BOMB_CLASS = 'bomb';
 var MARK_CLASS = 'marked';
-
-// Force the element to be redrawn
-function redraw(el) {
-	var d = el.style.display;
-	el.parentElement.style.display = 'none';
-	el.parentElement.style.display = d;
-}
 
 document.addEventListener("DOMContentLoaded", start);
 
@@ -31,6 +25,7 @@ function start(event) {
 		playing = true;
 
 		var configs = [];
+		REVEALED_COUNT = 0;
 
 		// filling in the bombs
 		var bomb_count = 0;
@@ -71,8 +66,6 @@ function start(event) {
 			i++;
 		}
 
-		//console.log(configs);
-
 		// calculating the digits
 		//
 		// __ __ __
@@ -84,8 +77,6 @@ function start(event) {
 			return (configs[i * COLS + j].isBomb) ? 1 : 0;
 		}
 		for (var i = 0; i < TILES_COUNT; i++) {
-			//console.log('row: ' + Math.floor(i/COLS));
-			//console.log('col: ' + (i%COLS));
 			if (!configs[i].isBomb) {
 				var result = 0;
 				var row = Math.floor(i / COLS);
@@ -220,18 +211,22 @@ function start(event) {
 				if (isBomb) {
 					tile.innerHTML = '*';
 					tile.classList.add('boom');
-					redraw(tile);
 					playing = false;
+					alert('BOOOM! Game over :(\nPress RESTART to play again.');
 				} else {
 					tile.classList.add('open');
 					tile.classList.add('d' + digit);
 					tile.innerHTML = digit ? digit : '';
+					REVEALED_COUNT++;
 					if (!digit) {
 						reveal(I);
 					}
+					if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
+						playing = false;
+						alert('You win!\nPress RESTART to play again.');
+					}
 				}
 				isOpen = true;
-				isBomb && alert('BOOOM! Game over :(\nPress RESTART to play again.');
 			} 
 		});
 
