@@ -215,18 +215,18 @@ function start(event) {
 					alert('BOOOM! Game over :(\nPress RESTART to play again.');
 				} else {
 					tile.classList.add('open');
+					isOpen = true;
 					tile.classList.add('d' + digit);
 					tile.innerHTML = digit ? digit : '';
-					REVEALED_COUNT++;
 					if (!digit) {
 						reveal(I);
 					}
+					REVEALED_COUNT++;
 					if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
 						playing = false;
 						alert('You win!\nPress RESTART to play again.');
 					}
 				}
-				isOpen = true;
 			} 
 		});
 
