@@ -6,6 +6,10 @@ var TILE_SIZE = 20 + (-4);
 var BOMBS_COUNT = 103;
 var TILES_COUNT = 500;
 var REVEALED_COUNT;
+// SVG icons
+var FLAG, BOMB;
+// Array of tiles' configs
+var configs;
 
 var TILE_CLASS = 'tile';
 var BOMB_CLASS = 'bomb';
@@ -18,13 +22,32 @@ function start(event) {
 	var BTN = document.querySelector('#re');
 	var tiles = [];
 
+	FLAG = document.querySelector("#flag");
+	BOMB = document.querySelector("#bomb");
+	// returns the SVG node with requested icon
+	function getSVG(name) {
+		var obj;
+		switch (name) {
+			case 'flag':
+				obj = FLAG.cloneNode(true);
+				break;
+			case 'bomb':
+				obj = BOMB.cloneNode(true);
+				break;
+			default:
+				break;
+		}
+		obj.style.display = 'inline';
+		return obj;
+	}
+
 	var playing = true;
 
 	BTN.addEventListener('click', function () {
 		FIELD.innerHTML = '';
 		playing = true;
 
-		var configs = [];
+		configs = [];
 		REVEALED_COUNT = 0;
 
 		// filling in the bombs
@@ -73,7 +96,7 @@ function start(event) {
 		//|3_|ij|4_|
 		//|5_|6_|7_|
 		//
-		function dig_calc (configs, i, j) {
+		function dig_calc (i, j) {
 			return (configs[i * COLS + j].isBomb) ? 1 : 0;
 		}
 		for (var i = 0; i < TILES_COUNT; i++) {
@@ -87,35 +110,35 @@ function start(event) {
 				// 0
 				tmp_row = row - 1;
 				tmp_col = col - 1;
-				if ((tmp_row != -1)&&(tmp_col != -1)) result += dig_calc(configs, tmp_row, tmp_col);
+				if ((tmp_row != -1)&&(tmp_col != -1)) result += dig_calc(tmp_row, tmp_col);
 				// 1
 				tmp_row = row - 1;
 				tmp_col = col;
-				if (tmp_row != -1) result += dig_calc(configs, tmp_row, tmp_col);
+				if (tmp_row != -1) result += dig_calc(tmp_row, tmp_col);
 				// 2
 				tmp_row = row - 1;
 				tmp_col = col + 1;
-				if ((tmp_row != -1)&&(tmp_col != COLS)) result += dig_calc(configs, tmp_row, tmp_col);
+				if ((tmp_row != -1)&&(tmp_col != COLS)) result += dig_calc(tmp_row, tmp_col);
 				// 3
 				tmp_row = row;
 				tmp_col = col - 1;
-				if (tmp_col != -1) result += dig_calc(configs, tmp_row, tmp_col);
+				if (tmp_col != -1) result += dig_calc(tmp_row, tmp_col);
 				// 4
 				tmp_row = row;
 				tmp_col = col + 1;
-				if (tmp_col != COLS) result += dig_calc(configs, tmp_row, tmp_col);
+				if (tmp_col != COLS) result += dig_calc(tmp_row, tmp_col);
 				// 5
 				tmp_row = row + 1;
 				tmp_col = col - 1;
-				if ((tmp_row != ROWS)&&(tmp_col != -1)) result += dig_calc(configs, tmp_row, tmp_col);
+				if ((tmp_row != ROWS)&&(tmp_col != -1)) result += dig_calc(tmp_row, tmp_col);
 				// 6
 				tmp_row = row + 1;
 				tmp_col = col;
-				if (tmp_row != ROWS) result += dig_calc(configs, tmp_row, tmp_col);
+				if (tmp_row != ROWS) result += dig_calc(tmp_row, tmp_col);
 				// 7
 				tmp_row = row + 1;
 				tmp_col = col + 1;
-				if ((tmp_row != ROWS)&&(tmp_col != COLS)) result += dig_calc(configs, tmp_row, tmp_col);
+				if ((tmp_row != ROWS)&&(tmp_col != COLS)) result += dig_calc(tmp_row, tmp_col);
 
 				configs[i].digit = result;
 			}
@@ -195,6 +218,18 @@ function start(event) {
 		}
 	}
 
+	// Shows all the bombs on loose
+	function showBombs() {
+		tiles.forEach(function(tile, index) {
+			//if (tile.isMarked)
+			//if (!tile.isBomb) {
+			//	return;
+			//}
+			//tile.classList.add('open');
+			console.log(tile);
+		});
+	}
+
 	// Tile class
 	function Tile(config) {
 		var tile = document.createElement("div");
@@ -206,15 +241,19 @@ function start(event) {
 		var isMarked = config.isMarked;
 		var digit = config.digit;
 
+		function open() {
+			tile.classList.add('open');
+		}
+
 		tile.addEventListener("click", function (event) {
 			if (!isOpen && !isMarked && playing) {
 				if (isBomb) {
-					tile.innerHTML = '*';
 					tile.classList.add('boom');
+					showBombs();
 					playing = false;
 					alert('BOOOM! Game over :(\nPress RESTART to play again.');
 				} else {
-					tile.classList.add('open');
+					open();
 					isOpen = true;
 					tile.classList.add('d' + digit);
 					tile.innerHTML = digit ? digit : '';
@@ -235,12 +274,10 @@ function start(event) {
 			if (!isOpen && playing) {
 				if (isMarked) {
 					isMarked = false;
-					tile.classList.remove('marked');
-					tile.innerHTML = '';
+					tile.removeChild(tile.lastElementChild);
 				} else {
 					isMarked = true;
-					tile.classList.add('marked');
-					tile.innerHTML = '&#8919;';
+					tile.appendChild(getSVG('flag'));
 				}
 			}
 		});
@@ -268,7 +305,8 @@ function start(event) {
 			digit: digit,
 			append: append, 
 			click: click,
-			freeToReveal: freeToReveal
+			freeToReveal: freeToReveal,
+			addClassOpen: open
 		};
 	}
 }

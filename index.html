@@ -6,6 +6,21 @@
 	<script src="script.js"></script>
 </head>
 <body>
+	<svg id="flag" width="16" height="16" display="none">
+		<rect x="2" y="13" width="12" height="2"/>
+		<rect x="5" y="12" width="6" height="1"/>
+		<rect x="8" y="9" width="1" height="3"/>
+		<path d="M 9 2 l -2 0 l 0 1 l -1 0 l 0 1 
+		l -2 0 l 0 1 l -1 0 l 0 1 l -1 0 l 1 0 
+		l 0 1 l 2 0 l 0 1 l 2 0 l 0 1 l 2 0 z" fill="red"/>
+	</svg>
+	<svg id="bomb" width="16" height="16" display="none">
+		<circle cx="8" cy="8" r="4"/>
+		<path d="M 8 2 l 0 12
+				 M 2 8 l 12 0
+				 M 4.5 4.5 L 11.5 11.5
+				 M 4.5 11.5 L 11.5 4.5" stroke="black"/>
+	</svg>
 	<div id="main">
 		<div id="head">
 			<button id="re">RESTART</button>
