@@ -1,5 +1,6 @@
 'use strict';
 
+var xmlns = "http://www.w3.org/2000/svg";
 var ROWS = 25;
 var COLS = 20;
 var TILE_SIZE = 20 + (-4);
@@ -34,8 +35,17 @@ function start(event) {
 			case 'bomb':
 				obj = BOMB.cloneNode(true);
 				break;
-			default:
+			case 'nobomb':
+				obj = BOMB.cloneNode(true);
+				var tmp = document.createElementNS(xmlns, "path");
+				tmp.setAttributeNS(null, "d", "M 3 3 L 13 13 \
+									   M 3 13 L 13 3");
+				tmp.setAttributeNS(null, "stroke", "red");
+				tmp.setAttributeNS(null, "stroke-width", "2");
+				obj.appendChild(tmp);
 				break;
+			default:
+				return;
 		}
 		obj.style.display = 'inline';
 		return obj;
@@ -66,7 +76,7 @@ function start(event) {
 				} 
 				break;
 			}
-			if (Math.round(Math.random() * 99) < 20) {
+			if (Math.round(Math.random() * 100) < 19) {
 				if (configs[i % TILES_COUNT] == undefined || configs[i % TILES_COUNT].isBomb == false) {
 					configs[i % TILES_COUNT] = {
 						isBomb: true,
@@ -218,18 +228,6 @@ function start(event) {
 		}
 	}
 
-	// Shows all the bombs on loose
-	function showBombs() {
-		tiles.forEach(function(tile, index) {
-			//if (tile.isMarked)
-			//if (!tile.isBomb) {
-			//	return;
-			//}
-			//tile.classList.add('open');
-			console.log(tile);
-		});
-	}
-
 	// Tile class
 	function Tile(config) {
 		var tile = document.createElement("div");
@@ -241,19 +239,18 @@ function start(event) {
 		var isMarked = config.isMarked;
 		var digit = config.digit;
 
-		function open() {
-			tile.classList.add('open');
-		}
-
 		tile.addEventListener("click", function (event) {
 			if (!isOpen && !isMarked && playing) {
 				if (isBomb) {
 					tile.classList.add('boom');
-					showBombs();
+					tiles.forEach( function(e, i) {
+						e.onLose();
+					});
+					tile.appendChild(getSVG('bomb'));
 					playing = false;
 					alert('BOOOM! Game over :(\nPress RESTART to play again.');
 				} else {
-					open();
+					tile.classList.add('open');
 					isOpen = true;
 					tile.classList.add('d' + digit);
 					tile.innerHTML = digit ? digit : '';
@@ -282,8 +279,17 @@ function start(event) {
 			}
 		});
 
-		if (isBomb) {
-			tile.classList.add(BOMB_CLASS);
+		function onLose() {
+			if (isMarked && !isBomb) {
+				tile.classList.add('open');
+				tile.removeChild(tile.lastElementChild);
+				tile.appendChild(getSVG('nobomb'));
+				return;
+			}
+			if (isBomb && !isMarked) {
+				tile.classList.add('open');
+				tile.appendChild(getSVG('bomb'));
+			}
 		}
 
 		function append () {
@@ -306,7 +312,7 @@ function start(event) {
 			append: append, 
 			click: click,
 			freeToReveal: freeToReveal,
-			addClassOpen: open
+			onLose: onLose
 		};
 	}
 }
