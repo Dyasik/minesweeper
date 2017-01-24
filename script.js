@@ -21,6 +21,11 @@ document.addEventListener("DOMContentLoaded", start);
 function start(event) {
 	var FIELD = document.querySelector("#field");
 	var BTN = document.querySelector('#re');
+
+	var SMILE = document.querySelector('#smile');
+	var DEAD = document.querySelector('#dead');
+	var BOSS = document.querySelector('#boss');
+	
 	var tiles = [];
 
 	FLAG = document.querySelector("#flag");
@@ -44,6 +49,15 @@ function start(event) {
 				tmp.setAttributeNS(null, "stroke-width", "2");
 				obj.appendChild(tmp);
 				break;
+			case 'smile':
+				obj = SMILE.cloneNode(true);
+				break;
+			case 'dead':
+				obj = DEAD.cloneNode(true);
+				break;
+			case 'boss':
+				obj = BOSS.cloneNode(true);
+				break;
 			default:
 				return;
 		}
@@ -56,6 +70,9 @@ function start(event) {
 	BTN.addEventListener('click', function () {
 		FIELD.innerHTML = '';
 		playing = true;
+
+		BTN.removeChild(BTN.lastChild);
+		BTN.appendChild(getSVG('smile'));
 
 		configs = [];
 		REVEALED_COUNT = 0;
@@ -248,6 +265,8 @@ function start(event) {
 					});
 					tile.appendChild(getSVG('bomb'));
 					playing = false;
+					BTN.removeChild(BTN.lastChild);
+					BTN.appendChild(getSVG('dead'));
 					alert('BOOOM! Game over :(\nPress RESTART to play again.');
 				} else {
 					tile.classList.add('open');
@@ -260,6 +279,8 @@ function start(event) {
 					REVEALED_COUNT++;
 					if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
 						playing = false;
+						BTN.removeChild(BTN.lastChild);
+						BTN.appendChild(getSVG('boss'));
 						alert('You win!\nPress RESTART to play again.');
 					}
 				}
