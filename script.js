@@ -267,7 +267,7 @@ function start(event) {
 					playing = false;
 					BTN.removeChild(BTN.lastChild);
 					BTN.appendChild(getSVG('dead'));
-					alert('BOOOM! Game over :(\nPress RESTART to play again.');
+					alert('BOOOM! Game over :(\nPress on that sad face to play again.');
 				} else {
 					tile.classList.add('open');
 					isOpen = true;
@@ -281,7 +281,7 @@ function start(event) {
 						playing = false;
 						BTN.removeChild(BTN.lastChild);
 						BTN.appendChild(getSVG('boss'));
-						alert('You win!\nPress RESTART to play again.');
+						alert('You win!\nPress on that smiley face to play again.');
 					}
 				}
 			} 
