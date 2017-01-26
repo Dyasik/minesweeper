@@ -65,9 +65,13 @@ function start(event) {
 		return obj;
 	}
 
-	var playing = true;
+	var playing = false;
 
 	BTN.addEventListener('click', function () {
+		if (playing && !confirm('Do you really want to restart?')) {
+			return;
+		}
+
 		FIELD.innerHTML = '';
 		playing = true;
 
