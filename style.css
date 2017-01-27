@@ -6,9 +6,7 @@ body {
 	width: 400px;
 	height: 550px;
 	display: inline-block;
-	border-style: ridge;
-	border-width: 5px;
-	border-color: #ccc;
+    border: 5px ridge #ccc;
 	background-color: #ccc;
 }
 
@@ -22,8 +20,7 @@ body {
 	width: 25px;
 	height: 25px;
 	display: inline-block;
-	border-style: outset;
-	border-width: 3px;
+    border: 3px outset;
 	margin-top: 8px;
 }
 
@@ -31,12 +28,11 @@ body {
 	width: 16px;
 	height: 16px;
 	display: inline-block;
-	border-style: outset;
-	border-width: 2px;
+    border: 2px outset;
 	margin-bottom: -4px;
 	overflow: hidden;
 	cursor: default;
-    /* user-select is not a standart prop, so prefixes are needed */
+    /* user-select is not a standard prop, so prefixes are needed */
 	-webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -47,9 +43,7 @@ body {
 }
 
 .open {
-	border-style: solid;
-	border-color: #aaa;
-	border-width: 1px;
+	border: 1px solid #aaa;
 	padding: 1px;
 	font-family: sans-serif;
 	font-weight: bolder;

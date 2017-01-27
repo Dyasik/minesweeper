@@ -7,14 +7,9 @@ var TILE_SIZE = 20 + (-4);
 var BOMBS_COUNT = 103;
 var TILES_COUNT = 500;
 var REVEALED_COUNT;
-// SVG icons
-var FLAG, BOMB;
-// Array of tiles' configs
-var configs;
+var configs; // Array of tiles' configs
 
 var TILE_CLASS = 'tile';
-var BOMB_CLASS = 'bomb';
-var MARK_CLASS = 'marked';
 
 document.addEventListener("DOMContentLoaded", start);
 
@@ -25,11 +20,10 @@ function start(event) {
 	var SMILE = document.querySelector('#smile');
 	var DEAD = document.querySelector('#dead');
 	var BOSS = document.querySelector('#boss');
-	
-	var tiles = [];
+  var FLAG = document.querySelector("#flag");
+  var BOMB = document.querySelector("#bomb");
 
-	FLAG = document.querySelector("#flag");
-	BOMB = document.querySelector("#bomb");
+	var tiles = [];
 	// returns the SVG node with requested icon
 	function getSVG(name) {
 		var obj;
@@ -121,7 +115,6 @@ function start(event) {
 		}
 
 		// calculating the digits
-		//
 		// __ __ __
 		//|0_|1_|2_|
 		//|3_|ij|4_|
@@ -130,7 +123,7 @@ function start(event) {
 		function dig_calc (i, j) {
 			return (configs[i * COLS + j].isBomb) ? 1 : 0;
 		}
-		for (var i = 0; i < TILES_COUNT; i++) {
+		for (i = 0; i < TILES_COUNT; i++) {
 			if (!configs[i].isBomb) {
 				var result = 0;
 				var row = Math.floor(i / COLS);
@@ -176,7 +169,7 @@ function start(event) {
 		}
 
 		tiles = [];
-		for (var i = 0; i < TILES_COUNT; i++){
+		for (i = 0; i < TILES_COUNT; i++){
 			tiles[i] = new Tile(configs[i]);
 			tiles[i].append();
 		}
@@ -251,20 +244,24 @@ function start(event) {
 
 	// Tile class
 	function Tile(config) {
-		var tile = document.createElement("div");
+    // instance to be returned
+	  var $ = {
+	    isBomb: config.isBomb,
+      isOpen: config.isOpen,
+      isMarked: config.isMarked,
+      digit: config.digit
+    };
+
+	  var tile = document.createElement("div");
 		tile.setAttribute("class", TILE_CLASS);
 
 		var I = config.i;
-		var isBomb = config.isBomb;
-		var isOpen = config.isOpen;
-		var isMarked = config.isMarked;
-		var digit = config.digit;
 
 		tile.addEventListener("click", function (event) {
-			if (!isOpen && !isMarked && playing) {
-				if (isBomb) {
+			if (!$.isOpen && !$.isMarked && playing) {
+				if ($.isBomb) {
 					tile.classList.add('boom');
-					tiles.forEach( function(e, i) {
+					tiles.forEach( function(e) {
 						e.onLose();
 					});
 					tile.appendChild(getSVG('bomb'));
@@ -274,10 +271,10 @@ function start(event) {
 					alert('BOOOM! Game over :(\nPress on that sad face to play again.');
 				} else {
 					tile.classList.add('open');
-					isOpen = true;
-					tile.classList.add('d' + digit);
-					tile.innerHTML = digit ? digit : '';
-					if (!digit) {
+          $.isOpen = true;
+					tile.classList.add('d' + $.digit);
+					tile.innerHTML = $.digit ? $.digit : '';
+					if (!$.digit) {
 						reveal(I);
 					}
 					REVEALED_COUNT++;
@@ -293,51 +290,42 @@ function start(event) {
 
 		tile.addEventListener("contextmenu", function (event) {
 			event.preventDefault();
-			if (!isOpen && playing) {
-				if (isMarked) {
-					isMarked = false;
+			if (!$.isOpen && playing) {
+				if ($.isMarked) {
+          $.isMarked = false;
 					tile.removeChild(tile.lastElementChild);
 				} else {
-					isMarked = true;
+          $.isMarked = true;
 					tile.appendChild(getSVG('flag'));
 				}
 			}
 		});
 
-		function onLose() {
-			if (isMarked && !isBomb) {
+    $.onLose = function () {
+			if ($.isMarked && !$.isBomb) {
 				tile.classList.add('open');
 				tile.removeChild(tile.lastElementChild);
 				tile.appendChild(getSVG('nobomb'));
 				return;
 			}
-			if (isBomb && !isMarked) {
+			if ($.isBomb && !$.isMarked) {
 				tile.classList.add('open');
 				tile.appendChild(getSVG('bomb'));
 			}
-		}
-
-		function append () {
-			FIELD.appendChild(tile);
-		}
-
-		function click () {
-			tile.click();
-		}
-
-		function freeToReveal () {
-			return !(isOpen||isBomb||isMarked);
-		}
-
-		return {
-			isBomb: isBomb,
-			isOpen: isOpen,
-			isMarked: isMarked,
-			digit: digit,
-			append: append, 
-			click: click,
-			freeToReveal: freeToReveal,
-			onLose: onLose
 		};
+
+		$.append = function () {
+			FIELD.appendChild(tile);
+		};
+
+    $.click = function () {
+      tile.click();
+    };
+
+    $.freeToReveal = function () {
+			return !($.isOpen || $.isBomb || $.isMarked);
+		};
+
+		return $;
 	}
 }
