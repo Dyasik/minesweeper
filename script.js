@@ -244,15 +244,15 @@ function start(event) {
 
 	// Tile class
 	function Tile(config) {
-    // instance to be returned
-	  var $ = {
-	    isBomb: config.isBomb,
-      isOpen: config.isOpen,
-      isMarked: config.isMarked,
-      digit: config.digit
-    };
+    	// instance to be returned
+		var $ = {
+			isBomb: config.isBomb,
+			isOpen: config.isOpen,
+			isMarked: config.isMarked,
+			digit: config.digit
+		};
 
-	  var tile = document.createElement("div");
+	  	var tile = document.createElement("div");
 		tile.setAttribute("class", TILE_CLASS);
 
 		var I = config.i;
@@ -271,7 +271,7 @@ function start(event) {
 					alert('BOOOM! Game over :(\nPress on that sad face to play again.');
 				} else {
 					tile.classList.add('open');
-          $.isOpen = true;
+          			$.isOpen = true;
 					tile.classList.add('d' + $.digit);
 					tile.innerHTML = $.digit ? $.digit : '';
 					if (!$.digit) {
@@ -280,6 +280,9 @@ function start(event) {
 					REVEALED_COUNT++;
 					if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
 						playing = false;
+						tiles.forEach( function(e) {
+							e.onWin();
+						});
 						BTN.removeChild(BTN.lastChild);
 						BTN.appendChild(getSVG('boss'));
 						alert('You win!\nPress on that smiley face to play again.');
@@ -292,16 +295,16 @@ function start(event) {
 			event.preventDefault();
 			if (!$.isOpen && playing) {
 				if ($.isMarked) {
-          $.isMarked = false;
+          			$.isMarked = false;
 					tile.removeChild(tile.lastElementChild);
 				} else {
-          $.isMarked = true;
+          			$.isMarked = true;
 					tile.appendChild(getSVG('flag'));
 				}
 			}
 		});
 
-    $.onLose = function () {
+	    $.onLose = function () {
 			if ($.isMarked && !$.isBomb) {
 				tile.classList.add('open');
 				tile.removeChild(tile.lastElementChild);
@@ -314,15 +317,22 @@ function start(event) {
 			}
 		};
 
+		$.onWin = function () {
+			if ($.isBomb && !$.isMarked) {
+				tile.classList.add('open');
+				tile.appendChild(getSVG('bomb'));
+			}
+		};
+
 		$.append = function () {
 			FIELD.appendChild(tile);
 		};
 
-    $.click = function () {
-      tile.click();
-    };
+	    $.click = function () {
+	      tile.click();
+	    };
 
-    $.freeToReveal = function () {
+	    $.freeToReveal = function () {
 			return !($.isOpen || $.isBomb || $.isMarked);
 		};
 
