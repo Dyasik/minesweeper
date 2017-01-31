@@ -4,16 +4,25 @@ body {
 
 #main {
 	width: 400px;
-	height: 550px;
 	display: inline-block;
     border: 5px ridge #ccc;
 	background-color: #ccc;
 }
 
 #head {
-	height: 45px;
 	border-bottom: ridge;
 	border-width: 5px;
+}
+
+#head td>div {
+	vertical-align: middle;
+}
+
+#bombs, #time {
+	height: 28px;
+	width: 60px;
+	border: 1px inset;
+	display: inline-block;
 }
 
 #re {
@@ -21,7 +30,7 @@ body {
 	height: 25px;
 	display: inline-block;
     border: 3px outset;
-	margin-top: 8px;
+	/*margin-top: 8px;*/
 }
 
 .tile {

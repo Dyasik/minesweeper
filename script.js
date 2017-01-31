@@ -69,7 +69,7 @@ function start(event) {
         FIELD.innerHTML = '';
         playing = true;
 
-        BTN.removeChild(BTN.lastChild);
+        BTN.lastChild && BTN.removeChild(BTN.lastChild);
         BTN.appendChild(getSVG('smile'));
 
         configs = [];
