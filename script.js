@@ -34,6 +34,11 @@ function start(event) {
     var BOMB = document.querySelector("#bomb");
 
     var tiles = [];
+
+    var BOMBS_COUNTER = new Counter(0, BOMBS_DIV);
+    var TIME_COUNTER = new Counter(0, TIME_DIV);
+    var TIME_COUNTER_ID; // for setTimeout
+
     // returns the SVG node with requested icon
     function getSVG(name) {
         var obj;
@@ -78,6 +83,12 @@ function start(event) {
 
         FIELD.innerHTML = '';
         playing = true;
+        BOMBS_COUNTER.setValue(BOMBS_COUNT);
+        TIME_COUNTER.setValue(0);
+        TIME_COUNTER_ID = setTimeout(function anon() {
+            TIME_COUNTER.delta(1);
+            TIME_COUNTER_ID = setTimeout(anon, 1000);
+        }, 1000);
 
         BTN.lastChild && BTN.removeChild(BTN.lastChild);
         BTN.appendChild(getSVG('smile'));
@@ -274,6 +285,7 @@ function start(event) {
     function checkForWin() {
         if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
             playing = false;
+            clearTimeout(TIME_COUNTER_ID);
             tiles.forEach( function(e) {
                 e.onWin();
             });
@@ -307,6 +319,7 @@ function start(event) {
                     });
                     tile.appendChild(getSVG('bomb'));
                     playing = false;
+                    clearTimeout(TIME_COUNTER_ID);
                     BTN.removeChild(BTN.lastChild);
                     BTN.appendChild(getSVG('dead'));
                     alert(MSG.LOSE);
@@ -326,9 +339,15 @@ function start(event) {
             if (!$.isOpen && playing) {
                 if ($.isMarked) {
                     $.isMarked = false;
+                    BOMBS_COUNTER.delta(1);
                     tile.removeChild(tile.lastElementChild);
                 } else {
+                    if (!BOMBS_COUNTER.val) {
+                        // don't let mark tiles if all of the bombs are marked
+                        return;
+                    }
                     $.isMarked = true;
+                    BOMBS_COUNTER.delta(-1);
                     tile.appendChild(getSVG('flag'));
                 }
             }
@@ -380,20 +399,20 @@ function start(event) {
     function Counter(val, container) {
         // instance to be returned
         var $ = {
-            val: val
+            val: +val
         };
 
         container.innerHTML = val;
 
         // Changes value on d
         $.delta = function(d) {
-            val += d;
-            container.innerHTML = val;
+            $.val += d;
+            container.innerHTML = $.val;
         };
 
         $.setValue = function(v) {
-            val = v;
-            container.innerHTML = val;
+            $.val = v;
+            container.innerHTML = $.val;
         };
 
         return $;
