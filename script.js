@@ -38,6 +38,7 @@ function start(event) {
     var BOMBS_COUNTER = new Counter(0, BOMBS_DIV);
     var TIME_COUNTER = new Counter(0, TIME_DIV);
     var TIME_COUNTER_ID; // for setTimeout
+    var everClicked = false; // False from the start, true on first click
 
     // returns the SVG node with requested icon
     function getSVG(name) {
@@ -77,18 +78,15 @@ function start(event) {
     var playing = false;
 
     BTN.addEventListener('click', function () {
-        if (playing && !confirm(MSG.RESTART)) {
+        if (playing && everClicked && !confirm(MSG.RESTART)) {
             return;
         }
 
         FIELD.innerHTML = '';
         playing = true;
         BOMBS_COUNTER.setValue(BOMBS_COUNT);
-        TIME_COUNTER.setValue(0);
-        TIME_COUNTER_ID = setTimeout(function anon() {
-            TIME_COUNTER.delta(1);
-            TIME_COUNTER_ID = setTimeout(anon, 1000);
-        }, 1000);
+        TIME_COUNTER.setValue(999);
+        everClicked = false;
 
         BTN.lastChild && BTN.removeChild(BTN.lastChild);
         BTN.appendChild(getSVG('smile'));
@@ -286,6 +284,7 @@ function start(event) {
         if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
             playing = false;
             clearTimeout(TIME_COUNTER_ID);
+            BOMBS_COUNTER.setValue(0);
             tiles.forEach( function(e) {
                 e.onWin();
             });
@@ -312,6 +311,14 @@ function start(event) {
 
         tile.addEventListener("click", function (event) {
             if (!$.isOpen && !$.isMarked && playing) {
+                if (!everClicked) {
+                    TIME_COUNTER.setValue(0);
+                    TIME_COUNTER_ID = setTimeout(function anon() {
+                        TIME_COUNTER.delta(1);
+                        TIME_COUNTER_ID = setTimeout(anon, 1000);
+                    }, 1000);
+                    everClicked = true;
+                }
                 if ($.isBomb) {
                     tile.classList.add('boom');
                     tiles.forEach( function(e) {
