@@ -189,7 +189,7 @@ function start(event) {
 
         tiles = [];
         for (i = 0; i < TILES_COUNT; i++){
-            tiles[i] = new Tile(configs[i]);
+            tiles[i] = /*new*/ Tile(configs[i]);
             tiles[i].append();
         }
     });

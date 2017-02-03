@@ -30,7 +30,11 @@ body {
 	height: 25px;
 	display: inline-block;
     border: 3px outset;
-	/*margin-top: 8px;*/
+}
+
+#time, #bombs {
+	background-color: black;
+	color: red;
 }
 
 .tile {
