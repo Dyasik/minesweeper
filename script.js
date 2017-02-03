@@ -11,11 +11,21 @@ var configs; // Array of tiles' configs
 
 var TILE_CLASS = 'tile';
 
+// Messages for the user
+var MSG = {
+    LOSE: 'BOOOM! Game over :(\nPress on that sad face to play again.',
+    WIN: 'You win!\nPress on that smiley face to play again.',
+    RESTART: 'Do you really want to restart?'
+};
+
+
 document.addEventListener("DOMContentLoaded", start);
 
 function start(event) {
     var FIELD = document.querySelector("#field");
     var BTN = document.querySelector('#re');
+    var BOMBS_DIV = document.querySelector('#bombs');
+    var TIME_DIV = document.querySelector('#time');
 
     var SMILE = document.querySelector('#smile');
     var DEAD = document.querySelector('#dead');
@@ -24,6 +34,12 @@ function start(event) {
     var BOMB = document.querySelector("#bomb");
 
     var tiles = [];
+
+    var BOMBS_COUNTER = new Counter(0, BOMBS_DIV);
+    var TIME_COUNTER = new Counter(0, TIME_DIV);
+    var TIME_COUNTER_ID; // for setTimeout
+    var everClicked = false; // False from the start, true on first click
+
     // returns the SVG node with requested icon
     function getSVG(name) {
         var obj;
@@ -62,12 +78,15 @@ function start(event) {
     var playing = false;
 
     BTN.addEventListener('click', function () {
-        if (playing && !confirm('Do you really want to restart?')) {
+        if (playing && everClicked && !confirm(MSG.RESTART)) {
             return;
         }
 
         FIELD.innerHTML = '';
         playing = true;
+        BOMBS_COUNTER.setValue(BOMBS_COUNT);
+        TIME_COUNTER.setValue(999);
+        everClicked = false;
 
         BTN.lastChild && BTN.removeChild(BTN.lastChild);
         BTN.appendChild(getSVG('smile'));
@@ -177,68 +196,101 @@ function start(event) {
 
     BTN.click();
 
+    // Pushes an element into the array if it is not already there.
+    function pushIfNotIn(el, arr) {
+        if (!~arr.indexOf(el)) {
+            arr.push(el);
+        }
+    }
     // when clicking on an empty (digit == 0) tile
     function reveal(i) {
-        var row = Math.floor(i / COLS);
-        var col = i % COLS;
-        var tmp_row;
-        var tmp_col;
-        var tmp_i;
-        // 0
-        tmp_row = row - 1;
-        tmp_col = col - 1;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_row != -1 && tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
+        var to_reveal = [i];
+        while (to_reveal.length) {
+            var new_to_reveal = [];
+            to_reveal.forEach( function (i) {
+                if (!tiles[i].isOpen) {
+                    REVEALED_COUNT++;
+                }
+                tiles[i].open();
+                checkForWin();
+                if (tiles[i].digit) {
+                    return;
+                }
+                var row = Math.floor(i / COLS);
+                var col = i % COLS;
+                var tmp_row, tmp_col, tmp_i;
+                // 0
+                tmp_row = row - 1;
+                tmp_col = col - 1;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_row != -1 && tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 1
+                tmp_row = row - 1;
+                tmp_col = col;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_row != -1 && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 2
+                tmp_row = row - 1;
+                tmp_col = col + 1;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_row != -1 && tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 3
+                tmp_row = row;
+                tmp_col = col - 1;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 4
+                tmp_row = row;
+                tmp_col = col + 1;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 5
+                tmp_row = row + 1;
+                tmp_col = col - 1;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_row != ROWS && tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 6
+                tmp_row = row + 1;
+                tmp_col = col;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_row != ROWS && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+                // 7
+                tmp_row = row + 1;
+                tmp_col = col + 1;
+                tmp_i = tmp_row * COLS + tmp_col;
+                if (tmp_row != ROWS && tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
+                    pushIfNotIn(tmp_i, new_to_reveal);
+                }
+            });
+            to_reveal = new_to_reveal;
         }
-        // 1
-        tmp_row = row - 1;
-        tmp_col = col;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_row != -1 && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
-        }
-        // 2
-        tmp_row = row - 1;
-        tmp_col = col + 1;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_row != -1 && tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
-        }
-        // 3
-        tmp_row = row;
-        tmp_col = col - 1;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
-        }
-        // 4
-        tmp_row = row;
-        tmp_col = col + 1;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
-        }
-        // 5
-        tmp_row = row + 1;
-        tmp_col = col - 1;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_row != ROWS && tmp_col != -1 && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
-        }
-        // 6
-        tmp_row = row + 1;
-        tmp_col = col;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_row != ROWS && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
-        }
-        // 7
-        tmp_row = row + 1;
-        tmp_col = col + 1;
-        tmp_i = tmp_row * COLS + tmp_col;
-        if (tmp_row != ROWS && tmp_col != COLS && tiles[tmp_i].freeToReveal()) {
-            tiles[tmp_i].click();
+    }
+
+    function checkForWin() {
+        if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
+            playing = false;
+            clearTimeout(TIME_COUNTER_ID);
+            BOMBS_COUNTER.setValue(0);
+            tiles.forEach( function(e) {
+                e.onWin();
+            });
+            BTN.removeChild(BTN.lastChild);
+            BTN.appendChild(getSVG('boss'));
+            alert(MSG.WIN);
         }
     }
 
@@ -259,6 +311,14 @@ function start(event) {
 
         tile.addEventListener("click", function (event) {
             if (!$.isOpen && !$.isMarked && playing) {
+                if (!everClicked) {
+                    TIME_COUNTER.setValue(0);
+                    TIME_COUNTER_ID = setTimeout(function anon() {
+                        TIME_COUNTER.delta(1);
+                        TIME_COUNTER_ID = setTimeout(anon, 1000);
+                    }, 1000);
+                    everClicked = true;
+                }
                 if ($.isBomb) {
                     tile.classList.add('boom');
                     tiles.forEach( function(e) {
@@ -266,27 +326,17 @@ function start(event) {
                     });
                     tile.appendChild(getSVG('bomb'));
                     playing = false;
+                    clearTimeout(TIME_COUNTER_ID);
                     BTN.removeChild(BTN.lastChild);
                     BTN.appendChild(getSVG('dead'));
-                    alert('BOOOM! Game over :(\nPress on that sad face to play again.');
+                    alert(MSG.LOSE);
                 } else {
-                    tile.classList.add('open');
-                    $.isOpen = true;
-                    tile.classList.add('d' + $.digit);
-                    tile.innerHTML = $.digit ? $.digit : '';
+                    $.open();
                     if (!$.digit) {
                         reveal(I);
                     }
                     REVEALED_COUNT++;
-                    if (TILES_COUNT - BOMBS_COUNT === REVEALED_COUNT) {
-                        playing = false;
-                        tiles.forEach( function(e) {
-                            e.onWin();
-                        });
-                        BTN.removeChild(BTN.lastChild);
-                        BTN.appendChild(getSVG('boss'));
-                        alert('You win!\nPress on that smiley face to play again.');
-                    }
+                    checkForWin();
                 }
             } 
         });
@@ -296,9 +346,15 @@ function start(event) {
             if (!$.isOpen && playing) {
                 if ($.isMarked) {
                     $.isMarked = false;
+                    BOMBS_COUNTER.delta(1);
                     tile.removeChild(tile.lastElementChild);
                 } else {
+                    if (!BOMBS_COUNTER.val) {
+                        // don't let mark tiles if all of the bombs are marked
+                        return;
+                    }
                     $.isMarked = true;
+                    BOMBS_COUNTER.delta(-1);
                     tile.appendChild(getSVG('flag'));
                 }
             }
@@ -332,8 +388,38 @@ function start(event) {
             tile.click();
         };
 
+        $.open = function () {
+            tile.classList.add('open');
+            $.isOpen = true;
+            tile.classList.add('d' + $.digit);
+            tile.innerHTML = $.digit ? $.digit : '';
+        };
+
         $.freeToReveal = function () {
             return !($.isOpen || $.isBomb || $.isMarked);
+        };
+
+        return $;
+    }
+
+    // Counter class
+    function Counter(val, container) {
+        // instance to be returned
+        var $ = {
+            val: +val
+        };
+
+        container.innerHTML = val;
+
+        // Changes value on d
+        $.delta = function(d) {
+            $.val += d;
+            container.innerHTML = $.val;
+        };
+
+        $.setValue = function(v) {
+            $.val = v;
+            container.innerHTML = $.val;
         };
 
         return $;
