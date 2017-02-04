@@ -409,17 +409,140 @@ function start(event) {
             val: +val
         };
 
-        container.innerHTML = val;
+        var NORMAL_FILL = 'red';
+        var SHADOW_FILL = '#500000';
+
+        var display = document.querySelector('#dig0').cloneNode(true);
+        display.style.display = 'initial';
+        container.appendChild(display);
+
+        function redraw() {
+            var digits = $.val + '';
+            switch (digits.length) {
+                case 1:
+                    digits = '00' + digits;
+                    break;
+                case 2:
+                    digits = '0' + digits;
+                    break;
+                default:
+                    break;
+            }
+            drawDigit(0, +digits[0]);
+            drawDigit(1, +digits[1]);
+            drawDigit(2, +digits[2]);
+        }
+
+        // Draws digit val on position pos (0 to 2)
+        function drawDigit(pos, val) {
+            var a = display.children;
+            switch (val) {
+                case 0:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 4].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                case 1:
+                    a[pos*7].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 1].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 4].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = SHADOW_FILL;
+                    break;
+                case 2:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 5].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                case 3:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                case 4:
+                    a[pos*7].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 1].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = SHADOW_FILL;
+                    break;
+                case 5:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 2].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                case 6:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 2].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                case 7:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 4].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = SHADOW_FILL;
+                    break;
+                case 8:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                case 9:
+                    a[pos*7].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 1].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 2].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 3].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 4].attributes.fill.value = SHADOW_FILL;
+                    a[pos*7 + 5].attributes.fill.value = NORMAL_FILL;
+                    a[pos*7 + 6].attributes.fill.value = NORMAL_FILL;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        redraw();
 
         // Changes value on d
         $.delta = function(d) {
             $.val += d;
-            container.innerHTML = $.val;
+            redraw();
         };
 
         $.setValue = function(v) {
             $.val = v;
-            container.innerHTML = $.val;
+            redraw();
         };
 
         return $;
